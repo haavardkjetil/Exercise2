@@ -1,0 +1,39 @@
+package main
+
+import (
+"fmt"
+"time"
+"runtime"
+)
+
+
+var j int = 0
+
+func function1(ch chan *int) {
+	for i := 0; i < 1000000; i++ {
+		var temp *int = <- ch
+		*temp++
+		ch <- temp
+	}
+}
+
+func function2(ch chan *int) {
+	for i := 0; i < 1000000; i++ {
+		var temp *int = <- ch
+		*temp--
+		ch <- temp
+	}
+}
+
+
+func main() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	ch := make(chan *int,1)
+	ch <- &j
+	go function1(ch)
+	go function2(ch)
+	time.Sleep(500*time.Millisecond)
+	fmt.Println(j)
+}
+
+// STUDÆÆS, WTF HAPPENS HERE?
